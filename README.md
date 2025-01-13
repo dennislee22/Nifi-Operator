@@ -1,16 +1,21 @@
 # Nifi Operator
 
-1. Deploy Cert-Manager if your Kubernetes cluster doesn't have it.
+<img width="661" alt="image" src="https://github.com/user-attachments/assets/3e3d055f-021a-4d39-8f05-9aa70069e6a0" />
+
+Apache NiFi is a powerful data integration platform designed to automate the movement, transformation, and management of data across diverse systems in real time. Built on a flow-based programming paradigm, NiFi enables users to design dataflows by linking processors that perform specific functions such as data ingestion, transformation, routing, and delivery. These flows are visually designed via NiFi’s intuitive web interface, which simplifies the creation and monitoring of complex workflows without requiring extensive coding knowledge. In this article, I will walk you through the installation process of the CFM (Cloudera Flow Management) operator on a Kubernetes cluster, leveraging the cloud-native advantages that Kubernetes offers, such as self-healing, automated rollouts, and scalability.
+
+## Deployment Steps
+1. Deploy `Cert-Manager` if your Kubernetes cluster doesn't have it.
 
 ```
-[root@ecs-m-01 ~]# helm repo add jetstack https://charts.jetstack.io
+# helm repo add jetstack https://charts.jetstack.io
 "jetstack" has been added to your repositories
 
-[root@ecs-m-01 ~]# helm repo list
+# helm repo list
 NAME    	URL                       
 jetstack	https://charts.jetstack.io
 
-[root@ecs-m-01 ~]# helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --set installCRDs=true
+# helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --set installCRDs=true
 NAME: cert-manager
 LAST DEPLOYED: Tue Jan  7 06:06:37 2025
 NAMESPACE: cert-manager
@@ -18,19 +23,20 @@ STATUS: deployed
 REVISION: 1
 TEST SUITE: None
 
-[root@ecs-m-01 ~]# oc -n cert-manager get pods
+# oc -n cert-manager get pods
 NAME                                     READY   STATUS    RESTARTS   AGE
 cert-manager-5f95b55fc4-jst99            1/1     Running   0          2m15s
 cert-manager-cainjector-5fd74756-j9lb6   1/1     Running   0          2m15s
 cert-manager-webhook-6dc9c495d5-rr6qs    1/1     Running   0          2m15s
 ```
 
-2. Download cfmctl and deploy CFM operator in the default namespace `cfm-operator-system`.
+2. Download [cfmctl](https://docs.cloudera.com/cfm-operator/2.9.0/installation/topics/cfm-op-install-overview.html) and deploy CFM operator in the default namespace `cfm-operator-system`.
 
 ```
 # ./cfmctl install --license /root/license.txt --image-repository "container.repository.cloudera.com/cloudera/cfm-operator" --image-tag "2.8.0-b94"
 ```
 
+3. Create a secret object in the same namespace to store your Cloudera credentials.
 ```
 # kubectl create secret docker-registry cfm-credential --docker-server container.repository.cloudera.com --docker-username xxx --docker-password yyy --namespace cfm-operator-system
 secret/cfm-credential created
@@ -47,18 +53,21 @@ sh.helm.release.v1.cfm-operator.v1   helm.sh/release.v1               1      3m3
 webhook-server-cert                  kubernetes.io/tls                3      3m33s
 ```
 
+4. Ensure Nifi CRDs are installed.
 ```
 # kubectl get crds | grep nifi
 nifiregistries.cfm.cloudera.com                       2025-01-07T06:31:33Z
 nifis.cfm.cloudera.com                                2025-01-07T06:31:33Z
 ```
 
+5. Ensure CFM pod is up and `Running`. 
 ```
 # kubectl get pods -n cfm-operator-system
 NAME                            READY   STATUS    RESTARTS   AGE
 cfm-operator-5d4fbd8b98-z86vp   2/2     Running   0          10m
 ```
 
+6. Create another namespace to host the Nifi cluster. Create a secret object in the same namespace to store your Cloudera credentials.
 ```
 # kubectl create namespace dlee-nifi
 namespace/dlee-nifi created
@@ -67,26 +76,29 @@ namespace/dlee-nifi created
 secret/cfm-credential created
 ```
 
+7. Create a Nifi cluster by applying `nificr-noTLS.yml` file. There's only 1 Nifi replica pod in this cluster. You may spin up more replicas in the actual production environment.
 ```
 # kubectl -n dlee-nifi apply -f nificr-noTLS.yml
 nifi.cfm.cloudera.com/mynifi created
 ```
 
+8. Ensure the Nifi pod is up and `Running`. 
 ```
-# oc -n dlee-nifi    get all
+# kubectl -n dlee-nifi    get all
 NAME           READY   STATUS    RESTARTS   AGE
 pod/mynifi-0   7/7     Running   0          3m
 
 NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)             AGE
 service/mynifi       ClusterIP   None            <none>        6007/TCP,5000/TCP   3m
-service/mynifi-web   ClusterIP   10.43.121.141   <none>        8443/TCP            3m
+service/mynifi-web   ClusterIP   10.43.121.141   <none>        8080/TCP            3m
 
 NAME                      READY   AGE
 statefulset.apps/mynifi   1/1     3d
 ```
 
+9. The deployment file would also create the following PVC automatically.
 ```
-# oc -n dlee-nifi get pvc
+# kubectl -n dlee-nifi get pvc
 NAME                             STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
 content-repository-mynifi-0      Bound    pvc-6885b555-5c9b-445b-822f-8b8e80e7becb   1Gi        RWO            longhorn       3m
 data-mynifi-0                    Bound    pvc-77078d1d-9258-4d16-9d8e-dcb3f2f56b83   1Gi        RWO            longhorn       3m
@@ -95,12 +107,12 @@ provenance-repository-mynifi-0   Bound    pvc-baf6d48e-6725-47cb-87a1-d7c75214c0
 state-mynifi-0                   Bound    pvc-d8457c49-fbfa-47aa-8dbc-83102d9ceca7   1Gi        RWO            longhorn       3m
 ```
 
+10. You may now browse the Nifi URL `mynifi.apps.dlee1.cldr.example` as exposed to the external network via ingress as shown below.
 ```
-# oc -n dlee-nifi get ingress
+# kubectl -n dlee-nifi get ingress
 NAME         CLASS    HOSTS                             ADDRESS         PORTS   AGE
 mynifi-web   <none>   mynifi.apps.dlee1.cldr.example    10.129.83.133   80      3d
 ```
-
 
 
 ## Case Study
