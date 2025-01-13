@@ -84,7 +84,7 @@ nifi.cfm.cloudera.com/mynifi created
 
 8. Ensure the Nifi pod is up and `Running`. 
 ```
-# kubectl -n dlee-nifi    get all
+# kubectl -n dlee-nifi get all
 NAME           READY   STATUS    RESTARTS   AGE
 pod/mynifi-0   7/7     Running   0          3m
 
