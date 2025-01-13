@@ -1,4 +1,4 @@
-# Nifi Operator
+# Nifi Operator: Visual Data Flow Management
 
 <img width="661" alt="image" src="https://github.com/user-attachments/assets/3e3d055f-021a-4d39-8f05-9aa70069e6a0" />
 
@@ -117,13 +117,21 @@ mynifi-web   <none>   mynifi.apps.dlee1.cldr.example    10.129.83.133   80      
 
 ## Case Study
 
+Here’s an illustration of a NiFi use case: ingesting data from a Kafka topic and sinking it into a remote Linux box via SSH. The flow begins with the `ConsumeKafka` processor, which pulls messages from the Kafka topic. Once ingested, the data can be optionally processed or transformed using processors like UpdateAttribute or ExecuteScript. After any necessary transformations, the `PutSFTP` processor is used to send the data to a specified directory on the remote Linux server via SSH. NiFi’s built-in features, including error handling, backpressure management, and provenance tracking, ensure data integrity and flow reliability throughout the entire process, enabling seamless, real-time data movement from Kafka to a remote server.
+
+1. Create `ConsumeKafka` and `PutSFTP` processors and link them together. Both processors are in `Stop` mode.
 <img width="1227" alt="image" src="https://github.com/user-attachments/assets/cae70a59-158c-4276-9da9-ba4a192e8467" />
 
+2. Configure `ConsumeKafka` as follows.
 <img width="786" alt="image" src="https://github.com/user-attachments/assets/1de6d52b-aa61-496d-ac76-220dd9cd4381" />
+
+3. Configure `PutSFTP` as follows.
 <img width="783" alt="image" src="https://github.com/user-attachments/assets/32e5137a-6a00-4f98-877b-3f4639243d24" />
 
+4. On an external Jupyter Notebook, run a simple Python code to create messages into a Kafka topic.
 <img width="1157" alt="image" src="https://github.com/user-attachments/assets/7ce0bace-e8ac-454f-92ec-94018186e7f1" />
 
+5. Upon completion, check the LAG status of consumer group `cgroup-3`.
 ```
 $ /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server my-cluster-kafka-bootstrap:9092 --describe --group cgroup-3
 
@@ -135,22 +143,19 @@ cgroup-3        ktopic-3        0          0               333             333  
 cgroup-3        ktopic-3        2          0               333             333             -               -               -
 ```
 
-
-
-<img width="1381" alt="image" src="https://github.com/user-attachments/assets/f83a8aa8-1faa-4867-9080-f174897c49a6" />
-
-<img width="1384" alt="image" src="https://github.com/user-attachments/assets/e18939c1-eb9a-4e45-816b-996307ff728b" />
-
-
+6. Run the `ConsumeKafka` processor but not the `PutSFTP` processor.
 <img width="1435" alt="image" src="https://github.com/user-attachments/assets/23a2b787-f188-4fc4-bce5-b8e7ea708478" />
 
+7. Right click the `ConsumeKafka` processor and select the "View Data Provenance" button. Note that the processor has successfully ingested the 1000 messages from the Kafka cluster.
+<img width="1384" alt="image" src="https://github.com/user-attachments/assets/e18939c1-eb9a-4e45-816b-996307ff728b" />
 
+8. Right click the `Success` connection and select the "List queue" button. Note that queue has been filled up with 1000, pending for the next data flow action.
 <img width="1381" alt="image" src="https://github.com/user-attachments/assets/bfa8919f-aceb-47b0-8dc6-95770d186e69" />
 
+9. Next, run the `PutSFTP` processor. Note that the queue has been processed to the next flow hop and emptied.
 <img width="1434" alt="image" src="https://github.com/user-attachments/assets/417f7170-6a08-4fb1-85d3-665952f73871" />
 
-
-
+10. Finally, check the destination (Linux box) and ensure that all 1000 messages have successfully been ingested into the configured directory.
 
 ```
 # ls -l /tmp/ktopic-3_output | wc -l
