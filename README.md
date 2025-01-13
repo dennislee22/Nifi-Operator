@@ -1,5 +1,4 @@
-# nifi-operator
-
+# Nifi Operator
 
 1. Deploy Cert-Manager if your Kubernetes cluster doesn't have it.
 
