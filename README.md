@@ -23,7 +23,7 @@ STATUS: deployed
 REVISION: 1
 TEST SUITE: None
 
-# oc -n cert-manager get pods
+# kubectl -n cert-manager get pods
 NAME                                     READY   STATUS    RESTARTS   AGE
 cert-manager-5f95b55fc4-jst99            1/1     Running   0          2m15s
 cert-manager-cainjector-5fd74756-j9lb6   1/1     Running   0          2m15s
