@@ -122,10 +122,10 @@ Here’s an illustration of a NiFi use case: ingesting data from a Kafka topic a
 1. Create `ConsumeKafka` and `PutSFTP` processors and link them together. Both processors are in `Stop` mode.
 <img width="1227" alt="image" src="https://github.com/user-attachments/assets/cae70a59-158c-4276-9da9-ba4a192e8467" />
 
-2. Configure `ConsumeKafka` as follows.
+2. Configure `ConsumeKafka` processor as follows.
 <img width="786" alt="image" src="https://github.com/user-attachments/assets/1de6d52b-aa61-496d-ac76-220dd9cd4381" />
 
-3. Configure `PutSFTP` as follows.
+3. Configure `PutSFTP` processor as follows.
 <img width="783" alt="image" src="https://github.com/user-attachments/assets/32e5137a-6a00-4f98-877b-3f4639243d24" />
 
 4. On an external Jupyter Notebook, run a simple Python code to create messages into a Kafka topic.
