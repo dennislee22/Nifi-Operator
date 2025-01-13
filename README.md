@@ -138,7 +138,7 @@ $ /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server my-cluster-kafka-bo
 Consumer group 'cgroup-3' has no active members.
 
 GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
-cgroup-3        ktopic-3        1          0               333             334             -               -               -
+cgroup-3        ktopic-3        1          0               334             334             -               -               -
 cgroup-3        ktopic-3        0          0               333             333             -               -               -
 cgroup-3        ktopic-3        2          0               333             333             -               -               -
 ```
