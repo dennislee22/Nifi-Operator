@@ -33,7 +33,7 @@ cert-manager-webhook-6dc9c495d5-rr6qs    1/1     Running   0          2m15s
 2. Download [cfmctl](https://docs.cloudera.com/cfm-operator/2.9.0/installation/topics/cfm-op-install-overview.html) and deploy CFM operator in the namespace `cfm-operator-system`.
 
 ```
-# ./cfmctl install --license /license.txt --image-repository "container.repository.cloudera.com/cloudera/cfm-operator" --image-tag "2.8.0-b94"
+# ./cfmctl install --license /license.txt --image-repository "container.repository.cloudera.com/cloudera/cfm-operator" --image-tag "2.9.0-b96"
 ```
 
 3. Create a secret object in the same namespace to store your Cloudera credentials.
