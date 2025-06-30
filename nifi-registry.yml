@@ -9,7 +9,7 @@ spec:
     tiniImage:
         repository: container.repository.cloudera.com/cloudera/cfm-tini
         tag: 2.10.0-b134
-    hostName: mynifiregistry.apps.dlee1.cldr.example/nifi-registry/
+    hostName: mynifiregistry.apps.dlee1.cldr.example
     uiConnection:
       type: Ingress
       annotations:
