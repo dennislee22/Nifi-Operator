@@ -41,16 +41,20 @@ cert-manager-webhook-6dc9c495d5-rr6qs    1/1     Running   0          2m15s
 # kubectl create secret docker-registry cfm-credential --docker-server container.repository.cloudera.com --docker-username xxx --docker-password yyy --namespace cfm-operator-system
 secret/cfm-credential created
 
+# kubectl create secret docker-registry docker-pull-secret --docker-server container.repository.cloudera.com --docker-username xxx --docker-password yyy --namespace cfm-operator-system
+secret/docker-pull-secret created
+
 # kubectl create secret generic cfm-operator-license --from-file=license.txt=/license.txt -n cfm-operator-system
 secret/cfm-operator-license created
 
 # kubectl -n cfm-operator-system get secret
 NAME                                 TYPE                             DATA   AGE
-cfm-credential                       kubernetes.io/dockerconfigjson   1      2m17s
-cfm-license                          Opaque                           1      3m35s
-cfm-operator-license                 Opaque                           1      61s
-sh.helm.release.v1.cfm-operator.v1   helm.sh/release.v1               1      3m34s
-webhook-server-cert                  kubernetes.io/tls                3      3m33s
+cfm-credential                       kubernetes.io/dockerconfigjson   1      45m
+cfm-license                          Opaque                           1      47m
+cfm-operator-license                 Opaque                           1      44m
+docker-pull-secret                   kubernetes.io/dockerconfigjson   1      15s
+sh.helm.release.v1.cfm-operator.v1   helm.sh/release.v1               1      47m
+webhook-server-cert                  kubernetes.io/tls                3      47m
 ```
 
 4. Ensure Nifi CRDs are installed.
