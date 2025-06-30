@@ -1,0 +1,18 @@
+apiVersion: cfm.cloudera.com/v1alpha1
+kind: NifiRegistry
+metadata:
+    name: mynifiregistry
+spec:
+    image:
+        repository: container.repository.cloudera.com/cloudera/cfm-nifiregistry-k8s
+        tag: 2.10.0-b134-nifi_2.3.0.4.3.2.0-89
+    tiniImage:
+        repository: container.repository.cloudera.com/cloudera/cfm-tini
+        tag: 2.10.0-b134
+    hostName: mynifiregistry.apps.dlee1.cldr.example/nifi-registry/
+    uiConnection:
+      type: Ingress
+      annotations:
+        nginx.ingress.kubernetes.io/affinity: cookie
+        nginx.ingress.kubernetes.io/affinity-mode: persistent
+        nginx.ingress.kubernetes.io/backend-protocol: HTTP
