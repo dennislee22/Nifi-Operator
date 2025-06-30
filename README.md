@@ -128,7 +128,7 @@ NAME               READY   STATUS    RESTARTS   AGE
 mynifiregistry-0   5/5     Running   0          21m
 ```
 
-12. You may now browse the Nifi URL `mynifiregistry.apps.dlee1.cldr.example/nifi-registry` as exposed to the external network via ingress as shown below.
+12. You may now browse the Nifi-Registry URL `mynifiregistry.apps.dlee1.cldr.example/nifi-registry` as exposed to the external network.
 <img width="1451" alt="image" src="https://github.com/user-attachments/assets/409506ca-d64b-4342-a462-2880e547f3d1" />
 
 ## Case Study
