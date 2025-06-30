@@ -118,6 +118,18 @@ NAME         CLASS    HOSTS                             ADDRESS         PORTS   
 mynifi-web   <none>   mynifi.apps.dlee1.cldr.example    10.129.83.133   80      3d
 ```
 
+11. You may also create a Nifi-registry pod to store the Nifi process group's flow definition.
+```
+# kubectl create ns dlee-nifi-registry
+# kubectl create secret docker-registry cfm-credential --docker-server container.repository.cloudera.com --docker-username xxx --docker-password yyy --namespace dlee-nifi-registry
+# kubectl -n dlee-nifi-registry apply -f nifi-reg.yaml
+# kubectl -n dlee-nifi-registry  get pods
+NAME               READY   STATUS    RESTARTS   AGE
+mynifiregistry-0   5/5     Running   0          21m
+```
+
+12. You may now browse the Nifi URL `mynifiregistry.apps.dlee1.cldr.example/nifi-registry` as exposed to the external network via ingress as shown below.
+<img width="1451" alt="image" src="https://github.com/user-attachments/assets/409506ca-d64b-4342-a462-2880e547f3d1" />
 
 ## Case Study
 
