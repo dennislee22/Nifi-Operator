@@ -1,0 +1,75 @@
+apiVersion: cfm.cloudera.com/v1alpha1
+kind: Nifi
+metadata:
+  name: mynifi
+spec:
+  security:
+    initialAdminIdentity: dennis
+    ldap:
+      authenticationStrategy: SIMPLE
+      managerDN: "uid=admin,cn=users,cn=accounts,dc=cldr,dc=example"
+      secretName: my-ldap-creds
+      referralStrategy: FOLLOW
+      connectTimeout: 3 secs
+      readTimeout: 10 secs
+      url: ldap://freeipa-01.dlee155.cldr.example
+      userSearchBase: "cn=users,cn=accounts,dc=cldr,dc=example"
+      userSearchFilter: "(uid={0})"
+      identityStrategy: USE_USERNAME
+      authenticationExpiration: 12 hours
+    nodeCertGen:
+      issuerRef:
+        name: self-signed-ca-issuer
+        kind: ClusterIssuer
+  replicas: 1
+  nifiVersion: 1.0.0
+  image:
+    repository: container.repository.cloudera.com/cloudera/cfm-nifi-k8s
+    tag: 2.11.0-b57-nifi_1.28.1.2.3.16.0-10
+    pullSecret: docker-pull-secret
+  tiniImage:
+    repository: container.repository.cloudera.com/cloudera/cfm-tini
+    tag: 2.11.0-b57
+    pullSecret: docker-pull-secret
+    pullPolicy: IfNotPresent
+  persistence:
+    size: 1Gi
+    contentRepo:
+      size: 1Gi
+    flowfileRepo:
+      size: 1Gi
+    provenanceRepo:
+      size: 2Gi
+    data: {}
+  hostName: mynifi.apps.dlee155.cldr.example
+  uiConnection:
+    type: Ingress
+    annotations:
+      nginx.ingress.kubernetes.io/affinity: cookie
+      nginx.ingress.kubernetes.io/affinity-mode: persistent
+      nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+  configOverride:
+    nifiProperties:
+      upsert:
+        nifi.cluster.leader.election.implementation: "KubernetesLeaderElectionManager"
+    bootstrapConf:
+      upsert:
+        java.arg.2: -Xms2g
+        java.arg.3: -Xmx2g
+        java.arg.13: -XX:+UseConcMarkSweepGC
+  stateManagement:
+   clusterProvider:
+     id: kubernetes-provider
+     class: org.apache.nifi.kubernetes.state.provider.KubernetesConfigMapStateProvider
+  resources:
+    nifi:
+      requests:
+        cpu: "1"
+        memory: 4Gi
+      limits:
+        cpu: "3"
+        memory: 6Gi
+    log:
+      requests:
+        cpu: 50m
+        memory: 128Mi
